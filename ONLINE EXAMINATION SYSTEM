@@ -1,0 +1,136 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class OnlineExamSystem extends JFrame implements ActionListener {
+    private JTextArea questionArea;
+    private JRadioButton option1, option2, option3, option4;
+    private ButtonGroup optionsGroup;
+    private JButton nextButton, submitButton;
+    private JLabel resultLabel;
+
+    private int currentQuestion = 0;
+    private int score = 0;
+
+    // Sample questions and answers
+    private String[] questions = {
+        "What is the capital of France?",
+        "Which planet is known as the Red Planet?",
+        "What is the largest ocean on Earth?"
+    };
+    private String[][] options = {
+        {"Berlin", "Madrid", "Paris", "Rome"},
+        {"Earth", "Mars", "Jupiter", "Saturn"},
+        {"Atlantic", "Indian", "Pacific", "Arctic"}
+    };
+    private String[] answers = {"Paris", "Mars", "Pacific"};
+
+    public OnlineExamSystem() {
+        setTitle("Online Examination System");
+        setSize(500, 400);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new GridLayout(6, 1));
+
+        // Question area
+        questionArea = new JTextArea();
+        questionArea.setEditable(false);
+        questionArea.setFont(new Font("Arial", Font.PLAIN, 16));
+        add(questionArea);
+
+        // Options
+        option1 = new JRadioButton();
+        option2 = new JRadioButton();
+        option3 = new JRadioButton();
+        option4 = new JRadioButton();
+
+        optionsGroup = new ButtonGroup();
+        optionsGroup.add(option1);
+        optionsGroup.add(option2);
+        optionsGroup.add(option3);
+        optionsGroup.add(option4);
+
+        add(option1);
+        add(option2);
+        add(option3);
+        add(option4);
+
+        // Next button
+        nextButton = new JButton("Next");
+        nextButton.addActionListener(this);
+        add(nextButton);
+
+        // Submit button
+        submitButton = new JButton("Submit");
+        submitButton.addActionListener(this);
+        add(submitButton);
+
+        // Result label
+        resultLabel = new JLabel("", SwingConstants.CENTER);
+        resultLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        add(resultLabel);
+
+        loadQuestion();
+    }
+
+    private void loadQuestion() {
+        if (currentQuestion < questions.length) {
+            questionArea.setText("Q" + (currentQuestion + 1) + ": " + questions[currentQuestion]);
+            option1.setText(options[currentQuestion][0]);
+            option2.setText(options[currentQuestion][1]);
+            option3.setText(options[currentQuestion][2]);
+            option4.setText(options[currentQuestion][3]);
+            optionsGroup.clearSelection();
+        } else {
+            displayResult();
+        }
+    }
+
+    private void displayResult() {
+        questionArea.setText("Exam Finished!");
+        option1.setVisible(false);
+        option2.setVisible(false);
+        option3.setVisible(false);
+        option4.setVisible(false);
+        nextButton.setVisible(false);
+        submitButton.setVisible(false);
+        resultLabel.setText("Your score: " + score + "/" + questions.length);
+    }
+
+    private void checkAnswer() {
+        String selectedAnswer = null;
+        if (option1.isSelected()) {
+            selectedAnswer = option1.getText();
+        } else if (option2.isSelected()) {
+            selectedAnswer = option2.getText();
+        } else if (option3.isSelected()) {
+            selectedAnswer = option3.getText();
+        } else if (option4.isSelected()) {
+            selectedAnswer = option4.getText();
+        }
+
+        if (selectedAnswer != null && selectedAnswer.equals(answers[currentQuestion])) {
+            score++;
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == nextButton) {
+            checkAnswer();
+            currentQuestion++;
+            loadQuestion();
+        } else if (e.getSource() == submitButton) {
+            checkAnswer();
+            displayResult();
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            OnlineExamSystem examSystem = new OnlineExamSystem();
+            examSystem.setVisible(true);
+        });
+    }
+}
